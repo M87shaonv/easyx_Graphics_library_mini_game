@@ -23,7 +23,7 @@ FacingState facing = FacingState::Right;
 #pragma endregion
 void DrawPlayer(int delta);
 void Init();
-
+void DetectionInput();
 POINT playerPos = { 500,500 };//玩家坐标
 const INT PLAYERSPEED = 5;//玩家初始初始速度
 bool isMoveUp = false;
@@ -38,108 +38,8 @@ int main() {
 
     while (running) {
         DWORD startTime = GetTickCount();//获取当前系统时间(ms)
-        //DetectionInput();
-        while (peekmessage(&msg))//从消息队列中检索消息,不会从队列移除它
-        {
-            if (msg.message == WM_KEYDOWN)//检查msg是否是一个键盘按键按下的消息,WM_KEYDOWN 是一个Windows消息常量，表示键盘上的一个键被按下
-            {
-                //根据按键的虚拟键码执行不同操作,可以在微软官方文档查看虚拟键码值
-                switch (msg.vkcode)
-                {
-                case VK_UP:
-                    isMoveUp = true;
-                    break;
-                case VK_DOWN:
-                    isMoveDown = true;
-                    break;
-                case VK_LEFT:
-                    isMoveLeft = true;
-                    facing = FacingState::Left;
-                    break;
-                case VK_RIGHT:
-                    isMoveRight = true;
-                    facing = FacingState::Right;
-                    break;
-                }
-            }
-            else if (msg.message == WM_KEYUP)//按键抬起
-            {
-                switch (msg.vkcode)
-                {
-                case VK_UP:
-                    isMoveUp = false;
-                    break;
-                case VK_DOWN:
-                    isMoveDown = false;
-                    break;
-                case VK_LEFT:
-                    isMoveLeft = false;
-                    break;
-                case VK_RIGHT:
-                    isMoveRight = false;
-                    break;
-                default:
-                    facing = FacingState::Move;
-                    break;
-                }
-            }
-#pragma region 这种方法移动没有那么快,可以试试
-            //if (msg.message == WM_KEYDOWN)
-            //switch (msg.vkcode)
-            //{
-            //case VK_UP:
-            //	isMoveUp = true;
-            //	break;
-            //case VK_DOWN:
-            //	isMoveDown = true;
-            //	break;
-            //case VK_LEFT:
-            //	isMoveLeft = true;
-            //	break;
-            //case VK_RIGHT:
-            //	isMoveRight = true;
-            //	break;
-            //}
-#pragma endregion
-        }
-        moveSpeedX = 0;//玩家X轴速度
-        moveSpeedY = 0;//玩家Y轴速度
-        if (isMoveUp) {
-            moveSpeedY -= PLAYERSPEED;
-        }
-        if (isMoveDown) {
-            moveSpeedY += PLAYERSPEED;
-        }
-        if (isMoveLeft) {
-            moveSpeedX -= PLAYERSPEED;
-            facing = FacingState::Left;
-        }
-        if (isMoveRight) {
-            moveSpeedX += PLAYERSPEED;
-            facing = FacingState::Right;
-        }
+        DetectionInput();//检测输入
 
-        /*对 2 进行平方根运算，得到约 1.414。这个值是斜着移动时 X 和 Y 轴速度叠加的结果。
-        使用 static_cast<int> 将计算结果转换为整数类型，以确保速度是整数值。
-        这个调整的过程确保了斜着移动时的总速度在 X 轴和 Y 轴上保持一致*/
-        if (moveSpeedX != 0 && moveSpeedY != 0) {
-            moveSpeedX = static_cast<int>(moveSpeedX / sqrt(2));
-            moveSpeedY = static_cast<int>(moveSpeedY / sqrt(2));
-        }
-        playerPos.x += moveSpeedX;
-        playerPos.y += moveSpeedY;
-
-        //isMoveUp = false;
-        //isMoveDown = false;
-        //isMoveLeft = false;
-        //isMoveRight = false;
-        //static size_t counter=0;//记录当前动画帧共播放几个游戏帧,设置为static确保计时器只在第一个游戏帧时初始化为0
-        //if (++counter % 5 == 0)//每5个游戏帧切换一个动画帧
-        //{
-        //	++currentAnimIndex;
-        //}
-        ////使动画循环播放,使用取模求余数,当ANIMNUMBER==6,结果便为0
-        //currentAnimIndex = currentAnimIndex % ANIMNUMBER;
         DWORD endTime = GetTickCount();//获取自系统启动以来所经过的毫秒数
         DWORD deltaTime = endTime - startTime;
         cleardevice();//清除屏幕内容
@@ -184,6 +84,95 @@ void Init()
     BeginBatchDraw();
 }
 void DetectionInput() {
+    while (peekmessage(&msg))//从消息队列中检索消息,不会从队列移除它
+    {
+        if (msg.message == WM_KEYDOWN)//检查msg是否是一个键盘按键按下的消息,WM_KEYDOWN 是一个Windows消息常量，表示键盘上的一个键被按下
+        {
+            //根据按键的虚拟键码执行不同操作,可以在微软官方文档查看虚拟键码值
+            switch (msg.vkcode)
+            {
+            case VK_UP:
+                isMoveUp = true;
+                break;
+            case VK_DOWN:
+                isMoveDown = true;
+                break;
+            case VK_LEFT:
+                isMoveLeft = true;
+                facing = FacingState::Left;
+                break;
+            case VK_RIGHT:
+                isMoveRight = true;
+                facing = FacingState::Right;
+                break;
+            }
+        }
+        else if (msg.message == WM_KEYUP)//按键抬起
+        {
+            switch (msg.vkcode)
+            {
+            case VK_UP:
+                isMoveUp = false;
+                break;
+            case VK_DOWN:
+                isMoveDown = false;
+                break;
+            case VK_LEFT:
+                isMoveLeft = false;
+                break;
+            case VK_RIGHT:
+                isMoveRight = false;
+                break;
+            default:
+                facing = FacingState::Move;
+                break;
+            }
+        }
+#pragma region 这种方法移动没有那么快,可以试试
+        //if (msg.message == WM_KEYDOWN)
+        //switch (msg.vkcode)
+        //{
+        //case VK_UP:
+        //	isMoveUp = true;
+        //	break;
+        //case VK_DOWN:
+        //	isMoveDown = true;
+        //	break;
+        //case VK_LEFT:
+        //	isMoveLeft = true;
+        //	break;
+        //case VK_RIGHT:
+        //	isMoveRight = true;
+        //	break;
+        //}
+#pragma endregion
+    }
+    moveSpeedX = 0;//玩家X轴速度
+    moveSpeedY = 0;//玩家Y轴速度
+    if (isMoveUp) {
+        moveSpeedY -= PLAYERSPEED;
+    }
+    if (isMoveDown) {
+        moveSpeedY += PLAYERSPEED;
+    }
+    if (isMoveLeft) {
+        moveSpeedX -= PLAYERSPEED;
+        facing = FacingState::Left;
+    }
+    if (isMoveRight) {
+        moveSpeedX += PLAYERSPEED;
+        facing = FacingState::Right;
+    }
+
+    /*对 2 进行平方根运算，得到约 1.414。这个值是斜着移动时 X 和 Y 轴速度叠加的结果。
+    使用 static_cast<int> 将计算结果转换为整数类型，以确保速度是整数值。
+    这个调整的过程确保了斜着移动时的总速度在 X 轴和 Y 轴上保持一致*/
+    if (moveSpeedX != 0 && moveSpeedY != 0) {
+        moveSpeedX = static_cast<int>(moveSpeedX / sqrt(2));
+        moveSpeedY = static_cast<int>(moveSpeedY / sqrt(2));
+    }
+    playerPos.x += moveSpeedX;
+    playerPos.y += moveSpeedY;
 }
 #pragma region 加载序列帧图片来构成动画的函数,已被Animation类代替
 //void LoadAnim()
