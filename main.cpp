@@ -1,54 +1,48 @@
 #include <string>
-#include "Animation.h"
-
-bool running = true;//控制游戏主循环
+#include "Player.h"
+#include "Config.h"
+#include "Enemy.h"
+#include "Bullet.h"
+#include <iostream>
 ExMessage msg;//用于存储从消息队列中检索到的消息
-const INT WIDTH = 1280; //屏幕宽度常量
-const INT HEIGHT = 720;  //屏幕高度常量
-const INT FPS = 144; //帧率常量
-
-#pragma region 动画相关
+bool running = true;//控制游戏主循环
 size_t currentAnimIndex = 0;//当前动画帧索引
 const size_t ANIMNUMBER = 6;//动画帧总数常量,动画是循环播放,也就是当动画帧索引到达动画帧总数时,索引重置为0
-const INT PLAYER_WIDTH = 80;//玩家宽度常量
-const INT PLAYER_HEIGHT = 80;//玩家高度常量
-const INT SHADOW_WIDTH = 30;//影子宽度常量
+
 IMAGE bgImg;//背景图片
-IMAGE shadowImg;//影子图片
-IMAGE playerLeft[ANIMNUMBER];
-IMAGE playerRight[ANIMNUMBER];
-Animation anim_player_left(_T("img/player_left_%d.png"), 6, 160);//1秒内播放6张图片
-Animation anim_player_right(_T("img/player_right_%d.png"), 6, 160);
-FacingState facing = FacingState::Right;
-#pragma endregion
-void DrawPlayer(int delta);
+Player player;//玩家对象
+std::vector<Enemy*> enemies;//敌人对象指针容器
 void Init();
-void DetectionInput();
-POINT playerPos = { 500,500 };//玩家坐标
-const INT PLAYERSPEED = 5;//玩家初始初始速度
-bool isMoveUp = false;
-bool isMoveDown = false;
-bool isMoveLeft = false;
-bool isMoveRight = false;
-int moveSpeedX = 0;//玩家X轴速度
-int moveSpeedY = 0;//玩家Y轴速度
-int main() {
+void GenerateEnemies(std::vector<Enemy*>& enemies);
+int main()
+{
     //初始化操作
     Init();
 
     while (running) {
         DWORD startTime = GetTickCount();//获取当前系统时间(ms)
-        DetectionInput();//检测输入
+        while (peekmessage(&msg))//从消息队列中检索消息,不会从队列移除它
+        {
+            player.ProcessEvent(msg);//处理消息
+        }
+        player.Move();
+        GenerateEnemies(enemies);//生成新的敌人
+        for (auto& enemy : enemies) {  //遍历敌人对象指针容器来移动
+            enemy->Move(player);
+        }
+
+        cleardevice();//清除屏幕内容
+        putimage(0, 0, &bgImg);//绘制背景
+
+        player.Draw(delta);
+        for (auto& enemy : enemies) {  //遍历敌人对象指针容器来绘制
+            enemy->Draw(delta);
+        }
+
+        FlushBatchDraw();//将之前缓存图形绘制操作渲染到屏幕上
 
         DWORD endTime = GetTickCount();//获取自系统启动以来所经过的毫秒数
         DWORD deltaTime = endTime - startTime;
-        cleardevice();//清除屏幕内容
-        putimage(0, 0, &bgImg);//绘制背景
-        //putimage_alpha(playerPos.x, playerPos.y, &playerLeft[currentAnimIndex]);
-        //DrawPlayer(1000 / 144);//闪电侠速度
-        DrawPlayer(20);
-        FlushBatchDraw();//将之前缓存图形绘制操作渲染到屏幕上
-
         /*如果deltaTime小于1000 / 144（约等于6.94毫秒，对应于144Hz的帧率）
         则使用Sleep函数等待一段时间，以确保帧率的稳定*/
         if (deltaTime < 1000 / FPS)
@@ -57,123 +51,23 @@ int main() {
     EndBatchDraw();//关闭批处理绘制模式
 }
 
-/// <summary>
-/// 绘制玩家
-/// </summary>
-/// <param name="delta">绘制间隔</param>
-void DrawPlayer(int delta)
-{
-    //计算了玩家角色宽度的一半和阴影图像宽度的一半之间的差值,以便在玩家角色的正中间绘制阴影图像
-    int shadowpos_x = playerPos.x + (PLAYER_WIDTH / 2 - SHADOW_WIDTH / 2);
-    //计算了玩家角色高度的差值,以便在玩家角色的底部绘制阴影图像
-    int shadowpos_y = playerPos.y + PLAYER_HEIGHT - 10;
-    putimage_alpha(shadowpos_x, shadowpos_y, &shadowImg);
-    if (facing == FacingState::Left)//如果左移
-        anim_player_left.Play(playerPos.x, playerPos.y, delta);
-    else//如果右移
-        anim_player_right.Play(playerPos.x, playerPos.y, delta);
-}
 void Init()
 {
-    initgraph(WIDTH, HEIGHT);//初始化图形窗口
+    initgraph(SCREEN_WIDTH, SCREEN_HEIGHT);//初始化图形窗口
     loadimage(&bgImg, _T("img/background.png"));//加载背景图片
-    loadimage(&shadowImg, _T("img/shadow_player.png"));//加载影子图片
-
     /*开启批处理绘制模式,所有的图形绘制操作缓存起来
     调用FlushBatchDraw时才会被实际渲染到屏幕上。这可以提高绘制的效率*/
     BeginBatchDraw();
 }
-void DetectionInput() {
-    while (peekmessage(&msg))//从消息队列中检索消息,不会从队列移除它
-    {
-        if (msg.message == WM_KEYDOWN)//检查msg是否是一个键盘按键按下的消息,WM_KEYDOWN 是一个Windows消息常量，表示键盘上的一个键被按下
-        {
-            //根据按键的虚拟键码执行不同操作,可以在微软官方文档查看虚拟键码值
-            switch (msg.vkcode)
-            {
-            case VK_UP:
-                isMoveUp = true;
-                break;
-            case VK_DOWN:
-                isMoveDown = true;
-                break;
-            case VK_LEFT:
-                isMoveLeft = true;
-                facing = FacingState::Left;
-                break;
-            case VK_RIGHT:
-                isMoveRight = true;
-                facing = FacingState::Right;
-                break;
-            }
-        }
-        else if (msg.message == WM_KEYUP)//按键抬起
-        {
-            switch (msg.vkcode)
-            {
-            case VK_UP:
-                isMoveUp = false;
-                break;
-            case VK_DOWN:
-                isMoveDown = false;
-                break;
-            case VK_LEFT:
-                isMoveLeft = false;
-                break;
-            case VK_RIGHT:
-                isMoveRight = false;
-                break;
-            default:
-                facing = FacingState::Move;
-                break;
-            }
-        }
-#pragma region 这种方法移动没有那么快,可以试试
-        //if (msg.message == WM_KEYDOWN)
-        //switch (msg.vkcode)
-        //{
-        //case VK_UP:
-        //	isMoveUp = true;
-        //	break;
-        //case VK_DOWN:
-        //	isMoveDown = true;
-        //	break;
-        //case VK_LEFT:
-        //	isMoveLeft = true;
-        //	break;
-        //case VK_RIGHT:
-        //	isMoveRight = true;
-        //	break;
-        //}
-#pragma endregion
+void GenerateEnemies(std::vector<Enemy*>& enemies)//生成新的敌人
+{
+    const int INTERVAL = 100;//敌人间隔时间(ms)
+    static int counter = 0;//计时器
+    if (++counter % INTERVAL == 0) {
+        enemies.push_back(new Enemy());//生成新的敌人
     }
-    moveSpeedX = 0;//玩家X轴速度
-    moveSpeedY = 0;//玩家Y轴速度
-    if (isMoveUp) {
-        moveSpeedY -= PLAYERSPEED;
-    }
-    if (isMoveDown) {
-        moveSpeedY += PLAYERSPEED;
-    }
-    if (isMoveLeft) {
-        moveSpeedX -= PLAYERSPEED;
-        facing = FacingState::Left;
-    }
-    if (isMoveRight) {
-        moveSpeedX += PLAYERSPEED;
-        facing = FacingState::Right;
-    }
-
-    /*对 2 进行平方根运算，得到约 1.414。这个值是斜着移动时 X 和 Y 轴速度叠加的结果。
-    使用 static_cast<int> 将计算结果转换为整数类型，以确保速度是整数值。
-    这个调整的过程确保了斜着移动时的总速度在 X 轴和 Y 轴上保持一致*/
-    if (moveSpeedX != 0 && moveSpeedY != 0) {
-        moveSpeedX = static_cast<int>(moveSpeedX / sqrt(2));
-        moveSpeedY = static_cast<int>(moveSpeedY / sqrt(2));
-    }
-    playerPos.x += moveSpeedX;
-    playerPos.y += moveSpeedY;
 }
+
 #pragma region 加载序列帧图片来构成动画的函数,已被Animation类代替
 //void LoadAnim()
 //{

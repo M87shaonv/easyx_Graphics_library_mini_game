@@ -1,8 +1,7 @@
-#ifndef ANIMATION
-#define ANIMATION
+#ifndef ANIMATION_H
+#define ANIMATION_H
 #include <graphics.h>
 #include <vector>
-#endif // !ANIMATION
 
 #pragma comment(lib,"MSIMG32.LIB")//预处理指令,告诉编译器链接时包含该库,提供AlphaBlend函数
 //内联函数,使用IMGAE对象的透明度信息来绘制到屏幕.如果使用putimage,素材会有黑边
@@ -36,8 +35,10 @@ enum FacingState
 class Animation
 {
 public:
-    //LPCTCH是一个Windows平台上用于指向常量文本字符的指针类型定义
-    Animation(LPCTCH path, int num, int interval)//interval表示每帧持续时间,单位为毫秒
+    /*LPCTCH是一个Windows平台上用于指向常量文本字符的指针类型定义
+    * num是动画帧总数
+    interval表示每帧持续时间,单位为毫秒*/
+    Animation(LPCTCH path, int num, int interval)
     {
         interval_ms = interval;
         TCHAR filepath[256];
@@ -75,3 +76,4 @@ private:
     int interval_ms = 0;//帧间隔
     std::vector<IMAGE*> frame_sequence;//存储帧序列
 };
+#endif // !ANIMATION
