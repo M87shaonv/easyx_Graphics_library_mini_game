@@ -1,10 +1,11 @@
 #include "Player.h"
 #include "Config.h"
+
 Player::Player()
 {
     loadimage(&shadowImg, _T("img/shadow_player.png"));//加载影子图片
-    anim_player_left = new Animation(_T("img/player_left_%d.png"), 6, 160);//1秒内播放6张图片
-    anim_player_right = new Animation(_T("img/player_right_%d.png"), 6, 160);
+    anim_player_left = new Animation(atlas_player_left, 160);//1秒内播放6张图片
+    anim_player_right = new Animation(atlas_player_right, 160);
 }
 
 Player::~Player()
@@ -109,4 +110,27 @@ void Player::Draw(int delta)
 const POINT& Player::GetPosition() const
 {
     return playerPos;
+}
+// 计算并返回玩家矩形的左边界
+const int Player::CalculatePlayerLeft() const
+{
+    return playerPos.x - PLAYER_WIDTH / 2;
+}
+
+// 计算并返回玩家矩形的右边界
+const int Player::CalculatePlayerRight() const
+{
+    return playerPos.x + PLAYER_WIDTH / 2;
+}
+
+// 计算并返回玩家矩形的顶边界
+const int Player::CalculatePlayerTop() const
+{
+    return playerPos.y - PLAYER_HEIGHT / 2;
+}
+
+// 计算并返回玩家矩形的底边界
+const int Player::CalculatePlayerBottom() const
+{
+    return playerPos.y + PLAYER_HEIGHT / 2;
 }

@@ -4,7 +4,7 @@ Bullet::Bullet() = default;
 
 Bullet::~Bullet() = default;
 
-void Bullet::draw() const
+void Bullet::Draw() const
 {
     setlinecolor(RGB(255, 155, 50));
     setfillcolor(RGB(200, 75, 10));

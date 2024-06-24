@@ -5,6 +5,7 @@
 #include "Config.h"
 #include "Bullet.h"
 #include "Player.h"
+
 class Enemy
 {
 public:
@@ -15,6 +16,8 @@ public:
     void Move(const Player& player);
     void Draw(int delta);
     const POINT& GetPosition() const;//获取自身位置
+    void Hurt();//受伤
+    bool CheckAlive();//检查是否存活
 private:
     const int MOVESPEED = 2;
     const int ENEMY_WIDTH = 80;//敌人宽度
@@ -26,6 +29,7 @@ private:
     Animation* anim_enemy_right;
     POINT position;
     FacingState facing = FacingState::Right;
+    bool alive = true;
 
     enum SpawnEdge //敌人出生边缘
     {
