@@ -1,5 +1,4 @@
 #include "Enemy.h"
-#include <time.h>
 
 Enemy::Enemy()
 {
@@ -7,7 +6,6 @@ Enemy::Enemy()
     anim_enemy_left = new Animation(atlas_enemy_left, 45);
     anim_enemy_right = new Animation(atlas_enemy_right, 45);
 
-    srand(static_cast<unsigned int>(time(0)));//使用当前时间作为随机数生成器的种子
     SpawnEdge edge = (SpawnEdge)(rand() % 4);//随机生成边缘
 
     // 根据边缘位置生成坐标
