@@ -28,41 +28,41 @@ void Player::ProcessEvent(const ExMessage& msg)
         //根据按键的虚拟键码执行不同操作,可以在微软官方文档查看虚拟键码值
         switch (msg.vkcode)
         {
-        case VK_UP:
-            isMoveUp = true;
-            break;
-        case VK_DOWN:
-            isMoveDown = true;
-            break;
-        case VK_LEFT:
-            isMoveLeft = true;
-            facing = FacingState::Left;
-            break;
-        case VK_RIGHT:
-            isMoveRight = true;
-            facing = FacingState::Right;
-            break;
+            case VK_UP:
+                isMoveUp = true;
+                break;
+            case VK_DOWN:
+                isMoveDown = true;
+                break;
+            case VK_LEFT:
+                isMoveLeft = true;
+                facing = FacingState::Left;
+                break;
+            case VK_RIGHT:
+                isMoveRight = true;
+                facing = FacingState::Right;
+                break;
         }
     }
     else if (msg.message == WM_KEYUP)//按键抬起
     {
         switch (msg.vkcode)
         {
-        case VK_UP:
-            isMoveUp = false;
-            break;
-        case VK_DOWN:
-            isMoveDown = false;
-            break;
-        case VK_LEFT:
-            isMoveLeft = false;
-            break;
-        case VK_RIGHT:
-            isMoveRight = false;
-            break;
-        default:
-            facing = FacingState::Move;
-            break;
+            case VK_UP:
+                isMoveUp = false;
+                break;
+            case VK_DOWN:
+                isMoveDown = false;
+                break;
+            case VK_LEFT:
+                isMoveLeft = false;
+                break;
+            case VK_RIGHT:
+                isMoveRight = false;
+                break;
+            default:
+                facing = FacingState::Move;
+                break;
         }
     }
 }
@@ -71,17 +71,21 @@ void Player::Move()
 {
     moveSpeedX = 0;//玩家X轴速度
     moveSpeedY = 0;//玩家Y轴速度
-    if (isMoveUp) {
+    if (isMoveUp)
+    {
         moveSpeedY -= playerspeed;
     }
-    if (isMoveDown) {
+    if (isMoveDown)
+    {
         moveSpeedY += playerspeed;
     }
-    if (isMoveLeft) {
+    if (isMoveLeft)
+    {
         moveSpeedX -= playerspeed;
         facing = FacingState::Left;
     }
-    if (isMoveRight) {
+    if (isMoveRight)
+    {
         moveSpeedX += playerspeed;
         facing = FacingState::Right;
     }
@@ -89,7 +93,8 @@ void Player::Move()
     /*对 2 进行平方根运算，得到约 1.414。这个值是斜着移动时 X 和 Y 轴速度叠加的结果。
     使用 static_cast<int> 将计算结果转换为整数类型，以确保速度是整数值。
     这个调整的过程确保了斜着移动时的总速度在 X 轴和 Y 轴上保持一致*/
-    if (moveSpeedX != 0 && moveSpeedY != 0) {
+    if (moveSpeedX != 0 && moveSpeedY != 0)
+    {
         moveSpeedX = static_cast<int>(moveSpeedX / sqrt(2));
         moveSpeedY = static_cast<int>(moveSpeedY / sqrt(2));
     }
@@ -154,6 +159,7 @@ void Player::reset()
     moveSpeedX = 0;//玩家X轴速度
     moveSpeedY = 0;//玩家Y轴速度
     player_bullets = 3;
+    player_health = PALYERHEALTH;//玩家血量
     playerspeed = PLAYERSPEED;//玩家速度
     player_width = PLAYER_WIDTH;//玩家宽度
     player_height = PLAYER_HEIGHT;//玩家高度

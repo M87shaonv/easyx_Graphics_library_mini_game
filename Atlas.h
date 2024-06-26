@@ -44,4 +44,6 @@ extern Atlas* atlas_player_left;
 extern Atlas* atlas_player_right;
 extern Atlas* atlas_enemy_left;
 extern Atlas* atlas_enemy_right;
+extern Atlas* atlas_autoenemy_idle;
+extern Atlas* atlas_autoenemy_blast;
 #endif // ATLAS_H

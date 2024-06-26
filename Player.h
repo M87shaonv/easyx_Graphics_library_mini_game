@@ -23,6 +23,7 @@ public:
     const INT PLAYER_WIDTH = 80;//玩家宽度常量
     const INT PLAYER_HEIGHT = 80;//玩家高度常量
     const INT SHADOW_WIDTH = 32;//影子宽度常量
+    const INT PALYERHEALTH = 1;//玩家初始生命值
 
 public:
     int playerspeed = PLAYERSPEED;//玩家速度
@@ -30,6 +31,7 @@ public:
     int player_height = PLAYER_HEIGHT;//玩家高度
     int shadow_width = SHADOW_WIDTH;//影子宽度
     int player_bullets = 3;//玩家初始子弹数
+    int player_health = PALYERHEALTH;//玩家生命值
 private:
     IMAGE shadowImg;//影子图片
     Animation* anim_player_left;//玩家左移右移动画

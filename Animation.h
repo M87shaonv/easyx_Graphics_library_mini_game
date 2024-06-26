@@ -1,9 +1,8 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
-#include <graphics.h>
+
 #include <vector>
 #include "Atlas.h"
-
 //定义FacingState枚举类型,用于表示角色的朝向状态
 enum FacingState
 {
@@ -11,10 +10,10 @@ enum FacingState
     Right,
     Move,
 };
-
 class Animation
 {
 public:
+
     //atlas表示动画素材, interval表示每帧持续时间, 单位为毫秒
     Animation(Atlas* atlas, int interval)
     {

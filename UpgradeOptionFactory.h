@@ -10,6 +10,10 @@ struct UpgradeOption
     std::wstring name;
     std::wstring description;
     void (*effect)(Player&); // 指向升级效果函数的指针
+    // 构造函数
+    UpgradeOption(const std::wstring& name, const std::wstring& description, void (*effect)(Player&))
+        : name(name), description(description), effect(effect)
+    {}
 };
 // 升级选项工厂类
 class UpgradeOptionFactory
@@ -20,6 +24,7 @@ public:
         std::vector<UpgradeOption> options;
         options.push_back(UpgradeOption(L"增加速度", L"提高1点移动速度", &IncreaseSpeed));
         options.push_back(UpgradeOption(L"增加子弹", L"增加1颗子弹", &IncreaseBullets));
+        options.push_back(UpgradeOption(L"增加生命", L"增加1点生命值", &IncreaseHealth));
         // 随机打乱选项
         std::srand(std::time(0));
         std::random_device rd;
@@ -36,6 +41,10 @@ public:
     static void IncreaseBullets(Player& player)
     {
         player.player_bullets += 1;
+    }
+    static void IncreaseHealth(Player& player)
+    {
+        player.player_health += 1;
     }
 };
 
