@@ -64,7 +64,6 @@ public:
             Blast();
             is_blasting = true;
         }
-        if (is_blasting) return;
         const POINT& player_pos = player.GetPosition();
         int dx = player_pos.x - position.x;
         int dy = player_pos.y - position.y;
@@ -76,8 +75,8 @@ public:
         {
             double normalized_direction_x = dx / len_direction; // ¼ÆËã·½ÏòÏòÁ¿
             double normalized_direction_y = dy / len_direction;
-            position.x += (int)(MOVESPEED - 2 * normalized_direction_x); // ÒÆ¶¯µÐÈË
-            position.y += (int)(MOVESPEED - 2 * normalized_direction_y);
+            position.x += (int)((MOVESPEED - 1) * normalized_direction_x); // ÒÆ¶¯µÐÈË
+            position.y += (int)((MOVESPEED - 1) * normalized_direction_y);
             return;
         }
         if (len_direction > stop_distance)
@@ -281,7 +280,7 @@ public:
         int dy = player_pos.y - position.y;
         double distance = sqrt(dx * dx + dy * dy);
 
-        const int blastRadius = 100; // ±¬Õ¨·¶Î§°ë¾¶
+        const int blastRadius = 80; // ±¬Õ¨·¶Î§°ë¾¶
         if (distance <= blastRadius)
         {
             --player.player_health;

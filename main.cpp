@@ -311,9 +311,9 @@ void GenerateEnemies(std::vector<Enemy*>& enemies) //生成新的敌人
 }
 void GenerateAutoEnemies(std::vector<AutoEnemy*>& autoEnemies)//生成新的自动敌人
 {
-    static int counter = 0;//计时器
+    static int c = 0;//计时器
     if (grade <= 5) return;
-    if (++counter % (INTERVAL - grade) == 0)
+    if (++c % (INTERVAL) == 0)
     {
         autoEnemies.push_back(new AutoEnemy());
 
