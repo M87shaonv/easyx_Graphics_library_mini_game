@@ -31,6 +31,7 @@ void AutoEnemysOpeartions();
 void ShowUpgradeOptions(Player& player);
 void ShowGameOverMenu();
 void ResetGame();
+void DrawPlayerHealth();
 
 int main()
 {
@@ -71,6 +72,7 @@ int main()
         for (auto& bullet : bullets)//遍历子弹对象容器来绘制
             bullet.Draw();
 
+        DrawPlayerHealth();//绘制玩家生命值
         DrawExperienceBar(); // 绘制经验条
         FlushBatchDraw();//将之前缓存图形绘制操作渲染到屏幕上
 
@@ -109,7 +111,22 @@ void UpdateExperience(int points)
         ispause = false; // 继续游戏
     }
 }
+//绘制玩家生命值
+void DrawPlayerHealth()
+{
+    int heartWidth = 30; // 每个爱心的宽度
+    int heartHeight = 30; // 每个爱心的宽度
+    int x = 10; // 起始x坐标
+    int y = getheight() - heartHeight - 10; // 起始y坐标，位于窗口左下方
 
+    for (int i = 0; i < player.player_health; ++i)
+    {
+// 绘制一个爱心
+        solidcircle(x + heartWidth / 2 + i * heartWidth, y + heartHeight / 2, heartWidth / 2 - 5);
+        solidcircle(x + heartWidth / 2 - 5 + i * heartWidth, y + heartHeight / 2 - 5, heartWidth / 2 - 5);
+        solidrectangle(x + heartWidth / 2 - 10 + i * heartWidth, y + heartHeight / 2 - 5, x + heartWidth / 2 + 5 + i * heartWidth, y + heartHeight / 2 + 10);
+    }
+}
 // 绘制经验条
 void DrawExperienceBar()
 {
@@ -139,6 +156,8 @@ void AutoEnemysOpeartions()
     {
         if (!autoenemy->CheckPlayerCollision(player))
             continue;
+        autoenemy->Hurt();
+        mciSendString(_T("play blast from 0"), NULL, 0, NULL);//播放爆炸音效
         if (!(--player.player_health <= 0)) continue;
         static TCHAR text[128];
         _stprintf_s(text, _T("最终得分: %d!"), score);
@@ -180,7 +199,8 @@ void EnemysOperations()
     {
         if (!enemy->CheckPlayerCollision(player))
             continue;
-
+        enemy->Hurt();
+        mciSendString(_T("play blast from 0"), NULL, 0, NULL);//播放爆炸音效
         if (!(--player.player_health <= 0)) continue;
         static TCHAR text[128];
         _stprintf_s(text, _T("最终得分: %d!"), score);

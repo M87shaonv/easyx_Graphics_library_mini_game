@@ -11,16 +11,16 @@ Enemy::Enemy()
     // 根据边缘位置生成坐标
     switch (edge)
     {
-    case SpawnEdge::UP:
-    case SpawnEdge::DOWN:
-        position.x = rand() % SCREEN_WIDTH;
-        position.y = (edge == SpawnEdge::UP) ? -SCREEN_HEIGHT : SCREEN_HEIGHT;
-        break;
-    case SpawnEdge::LEFT:
-    case SpawnEdge::RIGHT:
-        position.x = (edge == SpawnEdge::LEFT) ? -SCREEN_WIDTH : SCREEN_WIDTH;
-        position.y = rand() % SCREEN_HEIGHT;
-        break;
+        case SpawnEdge::UP:
+        case SpawnEdge::DOWN:
+            position.x = rand() % SCREEN_WIDTH;
+            position.y = (edge == SpawnEdge::UP) ? -SCREEN_HEIGHT : SCREEN_HEIGHT;
+            break;
+        case SpawnEdge::LEFT:
+        case SpawnEdge::RIGHT:
+            position.x = (edge == SpawnEdge::LEFT) ? -SCREEN_WIDTH : SCREEN_WIDTH;
+            position.y = rand() % SCREEN_HEIGHT;
+            break;
     }
 }
 
@@ -56,7 +56,8 @@ void Enemy::Move(const Player& player)
     int dx = player_pos.x - position.x;
     int dy = player_pos.y - position.y;
     double len_direction = sqrt(dx * dx + dy * dy);//计算两点之间的距离
-    if (len_direction != 0) {
+    if (len_direction != 0)
+    {
         double normalized_direction_x = dx / len_direction;//计算方向向量
         double normalized_direction_y = dy / len_direction;
         position.x += (int)(MOVESPEED * normalized_direction_x);//移动敌人
